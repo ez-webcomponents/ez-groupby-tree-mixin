@@ -1,6 +1,17 @@
 MIT License
 
-Copyright (c) 2018 ez-webcomponents
+This software consists of voluntary contributions made by multiple
+individuals. For exact contribution history, see the revision history
+available at https://github.com/ez-webcomponents/ez-highchart-drilldown.
+
+Also, see AUTHORS.txt for Authors ordered by first contribution.
+
+The following license applies to all parts of this software except as
+documented below:
+
+====
+
+Copyright (c) 2018 Martin Israelsen 
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -19,3 +30,10 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
+=====
+
+All files located in the node_modules and external directories are
+externally maintained libraries used by this software which have their
+own licenses; we recommend you read them, as their terms may differ from
+the terms above.
