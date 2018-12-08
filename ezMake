@@ -1,0 +1,7 @@
+echo "\nBuilding ez-groupby-tree-mixin component...\n"
+echo "Note:  Please wait until build has finished -- canceling in the middle of the build could leave it in a weird state\n\n"
+
+# First, build the demo
+polymer build
+
+echo "\n\nFinished!!!\n"

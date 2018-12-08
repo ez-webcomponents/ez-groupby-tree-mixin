@@ -1,0 +1,25 @@
+{
+  "entrypoint": "./demo/index.html",
+  "shell": "./demo/index.html",
+  "fragments": [
+   "./src/components/ez-groupby-tree-mixin.js"
+  ],
+  "sources": [
+   "./src/components/ez-groupby-tree-mixin.js",
+   "./demo/data/*",
+   "./demo/index.html",
+   "./tools/*",
+   "./node_modules/@webcomponents/*"
+  ],
+  "extraDependencies": [
+    "./node_modules/@webcomponents/**/*",
+    "./node_modules/@polymer/iron-demo-helpers/**/*"
+  ],
+  "builds": [{
+   "preset": "es6-bundled",
+   "html": { "minify": false}, 
+   "addServiceWorker": false 
+  }],
+  "moduleResolution": "node",
+  "npm": true
+}

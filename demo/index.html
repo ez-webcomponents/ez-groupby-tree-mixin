@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
+
+    <title>sdl-srch-bar demo</title>
+    <script type="module" src="../node_modules/@webcomponents/webcomponentsjs/webcomponents-bundle.js"></script>
+    <script type="module">
+      import '@polymer/iron-demo-helpers/demo-pages-shared-styles.js';
+      import '@polymer/iron-demo-helpers/demo-snippet.js';
+    </script>
+
+
+    <custom-style>
+      <style is="custom-style" include="demo-pages-shared-styles">
+      </style>
+    </custom-style>
+  </head>
+  <body>
+    <div class="vertical-section-container centered">
+      <h1>Basic ez-groupby-tree-mixin Demo</h1>
+      <demo-snippet>
+        <template>         
+
+        </template>
+      </demo-snippet>
+    </div>
+
+    <br><br><br>
+    <div id="message1"></div>
+
+
+ 
+    <script  type="module">
+    import { EzGroupbyTreeMixin } from '../src/components/ez-groupby-tree-mixin.js'; 
+    
+    class Test {
+        constructor() {
+          this.var1 = 'var1'
+        }
+        method1() {
+          console.log(this.var1)
+        }
+      }
+
+    // Add in our Mixin to this base Test class
+    class MyTestClass extends EzGroupbyTreeMixin(Test) {  
+        
+    }
+
+    addEventListener('DOMContentLoaded', function(){ 
+
+        var data = [{
+          "_id": "1",
+          "revenue": "112",
+          "division": "Development",
+          "company": "Nucore",
+          "startdate": "2018-01-01",
+          "age": "10",
+          "eyeColor": "green",
+          "name": "Boy Blue",
+          "gender": "Female"
+        },{
+          "_id": "2",
+          "revenue": "644",
+          "division": "Marketing",
+          "company": "Space Dynamics Lab",
+          "startdate": "2018-01-01",
+          "age": "25",
+          "eyeColor": "Blue",
+          "name": "Jack Spratt",
+          "gender": "Male"
+        },{
+          "_id": "3",
+          "revenue": "884",
+          "division": "Support",
+          "company": "Spillman",
+          "startdate": "2018-11-01",
+          "age": "16",
+          "eyeColor": "Red",
+          "name": "Elmer Fudd",
+          "gender": "Female"
+        },{
+          "_id": "4",
+          "revenue": "392",
+          "division": "Marketing",
+          "company": "Nucore",
+          "startdate": "2019-10-11",
+          "age": "29",
+          "eyeColor": "Purple",
+          "name": "Bugs",
+          "gender": "Male"
+        },{
+          "_id": "5",
+          "revenue": "435",
+          "division": "Development",
+          "company": "Nucore",
+          "startdate": "2018-02-11",
+          "age": "56",
+          "eyeColor": "Lime Green",
+          "name": "Jane Doe",
+          "gender": "Unknown"
+        },{
+          "_id": "6",
+          "revenue": "188",
+          "division": "Support",
+          "company": "Spillman",
+          "startdate": "2019-05-01",
+          "age": "44",
+          "eyeColor": "Yellow",
+          "name": "Betty Bo",
+          "gender": "Male"
+        },{
+          "_id": "7",
+          "revenue": "733",
+          "division": "Marketing",
+          "company": "Spillman",
+          "startdate": "2019-10-11",
+          "age": "88",
+          "eyeColor": "Hazel",
+          "name": "Jeff Murdock",
+          "gender": "Male"
+        },{
+          "_id": "8",
+          "revenue": "263",
+          "division": "Marketing",
+          "company": "Nucore",
+          "startdate": "2019-07-11",
+          "age": "88",
+          "eyeColor": "Brown",
+          "name": "Rob Camp",
+          "gender": "Female"
+        }];
+
+      var groups = [{"field": "company", "aggregate": "sum(revenue)", "chart": "pie"},
+              {"field": "date_trunc(month,startdate)", "aggregate": "sum(revenue)", "chart": "line"},
+              {"field": "division", "aggregate": "sum(revenue)", "chart": "bar"},
+              {"field": "gender", "aggregate": "sum(revenue)", "chart": "pie"},
+              {"field": "eyeColor", "aggregate": "sum(revenue)", "chart": "bar"},
+              {"field": "age", "aggregate": "sum(revenue)", "chart": "pie"}];
+
+      let obj = new MyTestClass();  
+      var treeObj = obj.groupBy(data, groups, groups);
+
+      var tree = JSON.stringify(treeObj);
+
+      var message = document.querySelector('#message1');
+      message.innerHTML = tree;
+
+      console.log(treeObj);
+
+      }, false);
+
+    </script>
+  </body>
+</html>

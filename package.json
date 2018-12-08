@@ -1,0 +1,30 @@
+{
+  "name": "@ez-webcomponents/ez-groupby-tree-mixin",
+  "version": "1.0.0",
+  "description": "A mixin to add javascript 'groupby' cababilities to a data set using recursive tree processing",
+  "main": "index.js",
+  "repository": "git+https://github.com/ez-webcomponents/ez-groupby-tree-mixin.git",
+  "author": "Marty Israelsen",
+  "license": "MIT",
+  "dependencies": {
+    "@polymer/lit-element": "0.6.1",
+    "@polymer/polymer": "^3.0.0-pre.13",
+    "jquery": "^3.3.1"
+  },
+  "resolutions": {
+    "@polymer/polymer": "3.0.2",
+    "@polymer/iron-icon": "3.0.0-pre.21",
+    "@polymer/iron-flex-layout": "3.0.1",
+    "@polymer/iron-meta": "3.0.1",
+    "@polymer/iron-iconset-svg": "3.0.0-pre.21",
+    "@polymer/iron-a11y-keys-behavior": "3.0.0-pre.21",
+    "@polymer/iron-a11y-announcer": "3.0.0-pre.21"
+  },
+  "devDependencies": {
+    "@polymer/iron-demo-helpers": "^3.0.0-pre.21",
+    "@polymer/iron-icon": "^3.0.0-pre.21",
+    "@polymer/iron-icons": "^3.0.0-pre.21",
+    "@polymer/paper-input": "^3.0.0-pre.21",
+    "@webcomponents/webcomponentsjs": "^2.0.2"
+  }
+}
