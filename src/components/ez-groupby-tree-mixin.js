@@ -15,7 +15,7 @@ This program is available under MIT license, available at
 /* @polymerMixin */
 export const EzGroupbyTreeMixin = (superclass) => class extends superclass {  
 
-  globalColors = ["#7cb5ec", "#434348", "#90ed7d", "#f7a35c", "#8085e9", "#f15c80", "#e4d354", "#2b908f", "#f45b5b", "#91e8e1"];
+  //globalColors = ["#7cb5ec", "#434348", "#90ed7d", "#f7a35c", "#8085e9", "#f15c80", "#e4d354", "#2b908f", "#f45b5b", "#91e8e1"];
 
   /**
    * @function groupBy()
@@ -342,7 +342,7 @@ export const EzGroupbyTreeMixin = (superclass) => class extends superclass {
     }
 
     me.export(exportStr, "ez_download.csv", 'text/csv;charset=utf-8;');
-}
+  }
 
 /**
    * @function export()
@@ -354,25 +354,23 @@ export const EzGroupbyTreeMixin = (superclass) => class extends superclass {
    * 
    * @return a csv file of the data
    */         
-export(exportStr, filename, fileType) {
-    var blob = new Blob([exportStr], { type: fileType });
-    if (navigator.msSaveBlob) { // IE 10+
-        navigator.msSaveBlob(blob, filename);
-    } else {
-        var link = document.createElement("a");
-        if (link.download !== undefined) { // feature detection
-            // Browsers that support HTML5 download attribute
-            var url = URL.createObjectURL(blob);
-            link.setAttribute("href", url);
-            link.setAttribute("download", filename);
-            link.style.visibility = 'hidden';
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
+    export(exportStr, filename, fileType) {
+        var blob = new Blob([exportStr], { type: fileType });
+        if (navigator.msSaveBlob) { // IE 10+
+            navigator.msSaveBlob(blob, filename);
+        } else {
+            var link = document.createElement("a");
+            if (link.download !== undefined) { // feature detection
+                // Browsers that support HTML5 download attribute
+                var url = URL.createObjectURL(blob);
+                link.setAttribute("href", url);
+                link.setAttribute("download", filename);
+                link.style.visibility = 'hidden';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }
         }
     }
-}
-
-};
 
 };
