@@ -15,6 +15,8 @@ This program is available under MIT license, available at
 /* @polymerMixin */
 export const EzGroupbyTreeMixin = (superclass) => class extends superclass {  
 
+  globalColors = ["#7cb5ec", "#434348", "#90ed7d", "#f7a35c", "#8085e9", "#f15c80", "#e4d354", "#2b908f", "#f45b5b", "#91e8e1"];
+
   /**
    * @function groupBy()
    * @author Martin Israelsen <martin.israelsen@gmail.com>
@@ -294,5 +296,83 @@ export const EzGroupbyTreeMixin = (superclass) => class extends superclass {
       }
       return path;
   }
+
+  /**
+   * @function downloadData()
+   * @author Martin Israelsen <martin.israelsen@gmail.com>
+   *    Dumps out the data for this particular 'data' object into csv format.
+   *           
+   * @param series       The series object which holds the path information for this data object
+   * @param downloadObj  Holds which fields to download.
+   * @param data         The data object to download.
+   * 
+   * @return a csv file of the data
+   */        
+  downloadDataToCsv(series, downloadObj, data) {
+    var me = this;
+    var exportStr = "";
+
+    exportStr += me.title;
+    exportStr += "\n\n";
+
+    if (typeof series.path != 'undefined') {
+        exportStr += "Local Filter:\n";
+        series.path = series.path.replace(/,/g, " ");
+        if (parseInt(series.path) > 0) {
+            exportStr += '="'+series.path+'"'+",";
+        } else {
+            exportStr += '"'+series.path+'"'+",";
+        }
+        exportStr += "\n\n\n";
+    }
+
+    // Dump out header
+    for (var item in downloadObj) {
+        exportStr += '"'+downloadObj[item]+'"'+",";
+    }
+    exportStr += "\n";
+
+    // Now dump out data.
+    for (var k= 0; k < data.length; k++) {
+        for (var i=0; i< downloadObj.length; i++) {
+             exportStr += '"'+data[k][downloadObj[i]]+'"'+",";           
+        }
+
+        exportStr += "\n";
+    }
+
+    me.export(exportStr, "ez_download.csv", 'text/csv;charset=utf-8;');
+}
+
+/**
+   * @function export()
+   *    Downloads the formatted string to the client computer in csv format.
+   *           
+   * @param exportStr       The data string to download 
+   * @param filename        The name of the file to download to client computer
+   * @param fileType        The format of the file -- in this case text/csv
+   * 
+   * @return a csv file of the data
+   */         
+export(exportStr, filename, fileType) {
+    var blob = new Blob([exportStr], { type: fileType });
+    if (navigator.msSaveBlob) { // IE 10+
+        navigator.msSaveBlob(blob, filename);
+    } else {
+        var link = document.createElement("a");
+        if (link.download !== undefined) { // feature detection
+            // Browsers that support HTML5 download attribute
+            var url = URL.createObjectURL(blob);
+            link.setAttribute("href", url);
+            link.setAttribute("download", filename);
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+    }
+}
+
+};
 
 };
