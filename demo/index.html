@@ -134,7 +134,7 @@
         }];
 
       var groups = [{"field": "company", "aggregate": "sum(revenue)", "chart": "pie"},
-              {"field": "date_trunc(month,startdate)", "aggregate": "sum(revenue)", "chart": "line"},
+              {"field": "date_trunc(month,startdate)", "aggregate": "boxplot(revenue)", "chart": "boxplot"},
               {"field": "division", "aggregate": "sum(revenue)", "chart": "bar"},
               {"field": "gender", "aggregate": "sum(revenue)", "chart": "pie"},
               {"field": "eyeColor", "aggregate": "sum(revenue)", "chart": "bar"},
