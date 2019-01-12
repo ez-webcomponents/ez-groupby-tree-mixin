@@ -77,6 +77,8 @@ export const EzGroupbyTreeMixin = (superclass) => class extends superclass {
                   names.push(this.applyModifier(data[i][group.field], group));
               }
           }
+          // Sort the names so that time series will come out in ASC order
+          names.sort(); 
     
           // Now loop through (this reduced set of) the unique grouped up values
           for (let index = 0; index < names.length; index++) {
