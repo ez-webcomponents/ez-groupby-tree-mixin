@@ -133,12 +133,35 @@
           "gender": "Female"
         }];
 
-      var groups = [{"field": "company", "aggregate": "sum(revenue)", "chart": "pie"},
-              {"field": "date_trunc(month,startdate)", "aggregate": "boxplot(revenue)", "chart": "boxplot"},
-              {"field": "division", "aggregate": "sum(revenue)", "chart": "bar"},
-              {"field": "gender", "aggregate": "sum(revenue)", "chart": "pie"},
-              {"field": "eyeColor", "aggregate": "sum(revenue)", "chart": "bar"},
-              {"field": "age", "aggregate": "sum(revenue)", "chart": "pie"}];
+      var groups = [
+                  {"field": "company", 
+                      "datasets": [
+                                {"label": "Sum of Ages", "backgroundcolor": "rgba(255, 99, 132, 0.2)", "bordercolor": "rgba(255, 99, 132, 0.9)", "data": "sum(age)", "type": "line"},
+                                {"label": "Sum Revenue", "backgroundcolor": "rgba(54, 162, 235, 0.2)", "bordercolor": "rgba(54, 162, 235, 0.9)", "data": "sum(revenue)", "type": "bar"}
+                              ],
+                      "contextmenu": [{"name": "Wikipedia", "target": "modal", "url":"https://en.wikipedia.org/wiki/{company}"}, 
+                                      {"name": "USU",       "target": "_blank", "url":"https://www.usu.edu/"}]},
+                  {"field": "date_trunc(month,startdate)", 
+                      "datasets": [
+                                {"label": "Sum Ages", "backgroundcolor": "rgba(255, 99, 132, 0.2)",  "bordercolor": "rgba(255, 99, 132, 0.2)", "data": "sum(age)", "type": "line"},
+                                {"label": "Revenue", "backgroundcolor": "rgba(54, 162, 235, 0.2)",  "bordercolor": "rgba(54, 162, 235, 0.2)", "data": "sum(revenue)", "type": "bar"}
+                              ],
+                      "contextmenu": [{"name": "Wikipedia", "target": "modal", "url":"https://en.wikipedia.org/wiki/{company}"}, 
+                                      {"name": "USU2",      "target": "modal", "url":"https://www.usu.edu/"}]},
+                  {"field": "division", 
+                      "datasets": [
+                                {"label": "Revenue", "backgroundcolor": "#8e95cd", "bordercolor": "#8e95cd", "data": "sum(revenue)", "type": "stackedbar"},
+                                {"label": "Sum Ages", "backgroundcolor": "rgba(54, 162, 235, 0.2)", "bordercolor": "rgba(54, 162, 235, 0.9)", "data": "sum(age)", "type": "stackedbar"}
+                              ]},
+                  {"field": "age", 
+                      "datasets": [
+                                {"label": "Revenue", "backgroundcolor": "#8e95cd", "bordercolor": "#8e95cd", "data": "sum(revenue)", "type": "bar"}
+                              ]},
+                  {"field": "gender", 
+                      "datasets": [
+                                {"label": "Revenue", "backgroundcolor": "#8e95cd", "bordercolor": "#8e95cd", "data": "sum(revenue)", "type": "line"}
+                              ]}
+                  ];
 
       let obj = new MyTestClass();  
       var treeObj = obj.groupBy(data, groups, groups);

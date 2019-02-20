@@ -25,8 +25,8 @@ export const EzGroupbyTreeMixin = (superclass) => class extends superclass {
      * @param data        An array of objects that is to be grouped up  
      * @param groups      An array of objects that represents the order in which the data is to be grouped up.
      * @param fullGropuBy Same as 'groups' except that it contained the full groupby array each time through the recursion.
-     * @param func        The aggregate function to use on each grouping.  Default is aggFunction()
-     * @param pathFunc    The path aggregate function to use on each grouping.  Default is pathAgFunction()
+     * @param func        The function to use on each grouping.  Default is aggFunction()
+     * @param pathFunc    The path function to use on each grouping.  Default is pathAgFunction()
      * 
      *    Given a 'data' set with the follows fields:
      *   [{
@@ -44,12 +44,31 @@ export const EzGroupbyTreeMixin = (superclass) => class extends superclass {
      *     }]
      * 
      *    Example of 'groups' Object:
-     *          [{"field": "company", "aggregate": "sum(revenue)", "chart": "pie"},
-     *           {"field": "date_trunc(month,startdate)", "aggregate": "sum(revenue)", "chart": "line"},
-     *           {"field": "division", "aggregate": "sum(revenue)", "chart": "bar"},
-     *           {"field": "gender", "aggregate": "sum(revenue)", "chart": "pie"},
-     *           {"field": "eyeColor", "aggregate": "sum(revenue)", "chart": "bar"},
-     *           {"field": "age", "aggregate": "sum(revenue)", "chart": "pie"}]
+     *           var groups = [
+     *             {"field": "company", 
+     *                 "datasets": [
+     *                           {"label": "Sum of Ages", "backgroundcolor": "rgba(255, 99, 132, 0.2)", "bordercolor": "rgba(255, 99, 132, 0.9)", "data": "sum(age)", "type": "line"},
+     *                           {"label": "Sum Revenue", "backgroundcolor": "rgba(54, 162, 235, 0.2)", "bordercolor": "rgba(54, 162, 235, 0.9)", "data": "sum(revenue)", "type": "bar"}
+     *                         ],
+     *             {"field": "date_trunc(month,startdate)", 
+     *                 "datasets": [
+     *                           {"label": "Sum Ages", "backgroundcolor": "rgba(255, 99, 132, 0.2)",  "bordercolor": "rgba(255, 99, 132, 0.2)", "data": "sum(age)", "type": "line"},
+     *                           {"label": "Revenue", "backgroundcolor": "rgba(54, 162, 235, 0.2)",  "bordercolor": "rgba(54, 162, 235, 0.2)", "data": "sum(revenue)", "type": "bar"}
+     *                         ],
+     *             {"field": "division", 
+     *                 "datasets": [
+     *                           {"label": "Revenue", "backgroundcolor": "#8e95cd", "bordercolor": "#8e95cd", "data": "sum(revenue)", "type": "stackedbar"},
+     *                           {"label": "Sum Ages", "backgroundcolor": "rgba(54, 162, 235, 0.2)", "bordercolor": "rgba(54, 162, 235, 0.9)", "data": "sum(age)", "type": "stackedbar"}
+     *                         ]},
+     *             {"field": "age", 
+     *                 "datasets": [
+     *                           {"label": "Revenue", "backgroundcolor": "#8e95cd", "bordercolor": "#8e95cd", "data": "sum(revenue)", "type": "bar"}
+     *                         ]},
+     *             {"field": "gender", 
+     *                 "datasets": [
+     *                           {"label": "Revenue", "backgroundcolor": "#8e95cd", "bordercolor": "#8e95cd", "data": "sum(revenue)", "type": "line"}
+     *                         ]}
+     *             ];
      * 
      * 
      * @return returns a Tree Object which has the data grouped up in each node of the tree
@@ -67,8 +86,10 @@ export const EzGroupbyTreeMixin = (superclass) => class extends superclass {
           let group = groups[0];
           let r = [];
           let names = [];
-    
-          group['aggField'] = this.parseAggStr(group.aggregate);
+
+          for (var i=0; i < group.datasets.length; i++) {
+            group.datasets[i]['aggField'] = this.parseAggStr(group.datasets[i].data);
+          }
           group = this.parseGroupByField(group,group.field);
     
           // Loop through the data set to get the 'unique' group values for this level of the drilldown
@@ -171,12 +192,12 @@ export const EzGroupbyTreeMixin = (superclass) => class extends superclass {
     /**
      * @function parseAggStr()
      * @author Martin Israelsen <martin.israelsen@gmail.com>
-     *    Parses the Aggregate string to pull out the field that needs to be aggregated on.
+     *    Parses the datasets.data string to pull out the field that needs to be aggregated on.
      *    Example:  sum(revenue)  will return the string "revenue"
      *           
      * @param str        The aggregate field in the form of agg(field) 
      * 
-     * @return The the field to be aggregated on
+     * @return The field to be aggregated on
      */
     parseAggStr(str) {
         let match = str.match(/\((.*)\)/);
@@ -189,7 +210,7 @@ export const EzGroupbyTreeMixin = (superclass) => class extends superclass {
      * @author Martin Israelsen <martin.israelsen@gmail.com>
      *    Parses the group by field to see if there are any modifiers.  If a modifier is found
      *    then the group.modifier field and modifierParams are filled in. 
-     *    Example:  date_trunc(startdate)  will return the string "revenue"
+     *    Example:  date_trunc(month,startdate)  will return the string "startdate"
      *           
      * @param group        The group object for this level of the tree.
      * @param str          The group by 'field' we want to check for modifiers
@@ -214,7 +235,7 @@ export const EzGroupbyTreeMixin = (superclass) => class extends superclass {
     /**
      * @function aggFunction()
      * @author Martin Israelsen <martin.israelsen@gmail.com>
-     *    This function is called for each node of the grouping tree.  It aggregates the values for this grouping
+     *    This function is called for each node of the grouping tree.  The group.datasets[j].data represents this grouping
      *    based on the aggregate defined (i.e. sum, max, min etc) and based on the field being agregated on (i.e. sum(revenue)).    
      *           
      * @param me           A reference to 'this' object
@@ -225,71 +246,79 @@ export const EzGroupbyTreeMixin = (superclass) => class extends superclass {
      * @return   Returns the modifield group object
      */
     aggFunction(me, data, group, name) {
+        var returnArray = [];
     
-        if (typeof group.aggregate != 'undefined') {
-            var str = group.aggregate;
-    
-            switch(true){
-                case /^sum/.test(str): 
-                    var aggField = group.aggField;
-                    var returnNum = 0;
-                    for (var i=0; i<data.length; i++) {
-                        if (me.applyModifier(data[i][group.field],group) == name) {
-                            returnNum = parseInt(data[i][aggField]) + returnNum;
+        // loop over each dataset in this grouping to aggregate each one.
+        for (var j=0; j<group.datasets.length; j++) {
+            if (typeof group.datasets[j] != 'undefined') {
+                var str = group.datasets[j].data;
+                switch(true){
+                    case /^sum/.test(str): 
+                        var aggField = group.datasets[j]['aggField'];
+                        var returnNum = 0;
+                        for (var i=0; i<data.length; i++) {
+                            if (me.applyModifier(data[i][group.field],group) == name) {
+                                returnNum = parseInt(data[i][aggField]) + returnNum;
+                            }
                         }
-                    }
-                    break;
-                case /^max/.test(str) : 
-                    var aggField = group.aggField;
-                    var returnNum = Number.MIN_SAFE_INTEGER;
-                    for (var i=0; i<data.length; i++) {
-                        if (me.applyModifier(data[i][group.field],group) == name && returnNum < parseInt(data[i][aggField])) {
-                            returnNum = parseInt(data[i][aggField]);
+                        returnArray.push(returnNum);
+                        break;
+                    case /^max/.test(str) : 
+                        var aggField = group.datasets[j]['aggField'];
+                        var returnNum = Number.MIN_SAFE_INTEGER;
+                        for (var i=0; i<data.length; i++) {
+                            if (me.applyModifier(data[i][group.field],group) == name && returnNum < parseInt(data[i][aggField])) {
+                                returnNum = parseInt(data[i][aggField]);
+                            }
                         }
-                    }
-                    break;
-                case /^min/.test(str) : 
-                    var aggField = group.aggField;
-                    var returnNum = Number.MAX_SAFE_INTEGER ;
-                    for (var i=0; i<data.length; i++) {
-                        if (me.applyModifier(data[i][group.field],group) == name && returnNum > parseInt(data[i][aggField])) {
-                            returnNum = parseInt(data[i][aggField]);
+                        returnArray.push(returnNum);
+                        break;
+                    case /^min/.test(str) : 
+                        var aggField = group.datasets[j]['aggField'];
+                        var returnNum = Number.MAX_SAFE_INTEGER ;
+                        for (var i=0; i<data.length; i++) {
+                            if (me.applyModifier(data[i][group.field],group) == name && returnNum > parseInt(data[i][aggField])) {
+                                returnNum = parseInt(data[i][aggField]);
+                            }
                         }
-                    }
-                    break;
-                case /^count/.test(str) : 
-                    var returnNum = 0;
-                    for (var i=0; i<data.length; i++) {
-                        if (me.applyModifier(data[i][group.field],group) == name) {
-                            returnNum++;
+                        returnArray.push(returnNum);
+                        break;
+                    case /^count/.test(str) : 
+                        var returnNum = 0;
+                        for (var i=0; i<data.length; i++) {
+                            if (me.applyModifier(data[i][group.field],group) == name) {
+                                returnNum++;
+                            }
                         }
-                    }
-                    break;
-                case /^boxplot/.test(str) : 
-                  var aggField = group.aggField;
-                  var boxplot = {max: Number.MIN_SAFE_INTEGER, min:Number.MAX_SAFE_INTEGER, median: 0, q1:0, q3:0};
-                  var sum1 = 0;
-                  var arrayOfValues = [];
-                  for (var i=0; i<data.length; i++) {
-                      if (me.applyModifier(data[i][group.field],group) == name && boxplot.min > parseInt(data[i][aggField])) {
-                          boxplot.min = parseInt(data[i][aggField]);
-                      }
-                      if (me.applyModifier(data[i][group.field],group) == name && boxplot.max < parseInt(data[i][aggField])) {
-                          boxplot.max = parseInt(data[i][aggField]);
-                      }
-                      if (me.applyModifier(data[i][group.field],group) == name) {
-                          arrayOfValues.push(parseInt(data[i][aggField]));
-                      }
-                  }
-                  boxplot.q1 = me.Quartile_25(arrayOfValues);
-                  boxplot.median = me.Quartile_50(arrayOfValues);
-                  boxplot.q3 = me.Quartile_75(arrayOfValues);
-                  return boxplot;
-                default: 
-                    console.log("Unknown Aggregate Function "+str)
+                        returnArray.push(returnNum);
+                        break;
+                    case /^boxplot/.test(str) : 
+                        var aggField = group.datasets[j]['aggField'];
+                        var boxplot = {max: Number.MIN_SAFE_INTEGER, min:Number.MAX_SAFE_INTEGER, median: 0, q1:0, q3:0};
+                        var sum1 = 0;
+                        var arrayOfValues = [];
+                        for (var i=0; i<data.length; i++) {
+                            if (me.applyModifier(data[i][group.field],group) == name && boxplot.min > parseInt(data[i][aggField])) {
+                                boxplot.min = parseInt(data[i][aggField]);
+                            }
+                            if (me.applyModifier(data[i][group.field],group) == name && boxplot.max < parseInt(data[i][aggField])) {
+                                boxplot.max = parseInt(data[i][aggField]);
+                            }
+                            if (me.applyModifier(data[i][group.field],group) == name) {
+                                arrayOfValues.push(parseInt(data[i][aggField]));
+                            }
+                        }
+                        boxplot.q1 = me.Quartile_25(arrayOfValues);
+                        boxplot.median = me.Quartile_50(arrayOfValues);
+                        boxplot.q3 = me.Quartile_75(arrayOfValues);
+                        returnArray.push(boxplot);
+                        break;
+                    default: 
+                        console.log("Unknown datasets.data Function "+str)
+                }
             }  
-            return returnNum;    
-        }
+        }   
+        return returnArray; 
     }
   
     Median(data) {

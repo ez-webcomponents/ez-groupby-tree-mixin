@@ -1,6 +1,6 @@
 {
   "name": "@ez-webcomponents/ez-groupby-tree-mixin",
-  "version": "1.0.4",
+  "version": "2.0.0",
   "description": "A mixin to add javascript 'groupby' cababilities to a data set using recursive tree processing",
   "main": "index.js",
   "repository": "git+https://github.com/ez-webcomponents/ez-groupby-tree-mixin.git",
